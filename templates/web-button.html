@@ -1,10 +1,36 @@
 <!DOCTYPE html>
-<head>
+<html lang="en">
     <head>
         <title>Speech Recognizer</title>
-        </head>
+    </head>
+    <meta charset="UTF-8">
+    <meta name="viewport" 
+          content="width=device-width, 
+                   initial-scale=1.0">
         <body>
-            <button onclick="record_audio()">Record</button>
-        
+            <button onclick="record_audio()" style="background-color: red;">Record</button>
+            <div id="output"></div>
+
+            <script>
+                function record_audio() {
+                    // Set up the SpeechRecognition API
+                    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                    recognition.lang = 'en-US';
+
+                    // Start recognition
+                    recognition.start();
+
+                    // When recognition produces results, this function is called
+                    recognition.onresult = function(event) {
+                        const transcript = event.results[0][0].transcript;
+                        document.getElementById('output').innerText = `Transcription: ${transcript}`;
+                    };
+
+                    // Handle any errors that may occur during recognition
+                    recognition.onerror = function(event) {
+                        document.getElementById('output').innerText = 'Error occurred: ' + event.error;
+                    };
+                }
+            </script>
         </body>
 </html>
