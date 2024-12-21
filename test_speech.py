@@ -3,16 +3,17 @@ import sys
 import tkinter as tk
 from tkinter import messagebox
 import speech_recognition as sr
+from functools import partial
 
 # Suppress macOS warnings
 sys.stderr = open(os.devnull, 'w')
 
-def record(start:bool):
+def record_audio(time:int = 10):
     r = sr.Recognizer()
     with sr.Microphone() as source:
         messagebox.showinfo("Recording", "Please start speaking...")
         try:
-            audio_text = r.listen(source,stream=start)
+            audio_text = r.listen(source,timeout=time)
             transcribed = r.recognize_google(audio_text)
             messagebox.showinfo("Result", f"Did you say: {transcribed}")
         except sr.UnknownValueError:
@@ -22,8 +23,6 @@ def record(start:bool):
 
 root = tk.Tk()
 root.title('Speech Recorder')
-button = tk.Button(root, text='Record', width=25, command=record(True))
-button.pack(pady=10)
-button = tk.Button(root, text='Stop',width=25,command=record(False))
+button = tk.Button(root, text='Record', width=25, command=partial(record_audio,15))
 button.pack(pady=10)
 root.mainloop()
