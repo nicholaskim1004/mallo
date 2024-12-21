@@ -1,13 +1,6 @@
-import os
-import sys
-import tkinter as tk
-from tkinter import messagebox
 import speech_recognition as sr
 from functools import partial
 from flask import Flask, render_template, jsonify, request
-
-# Suppress macOS warnings
-#sys.stderr = open(os.devnull, 'w')
 
 app = Flask(__name__)
 
@@ -30,18 +23,17 @@ def home():
 
 @app.route('/record', methods=['POST'])
 def record():
-    time = request.json.get("time", 10)  
-    result = record_audio(time)
-    return jsonify(result)
+    r = sr.Recognizer()
+    try:
+        with sr.Microphone() as source:
+            audio_text = r.listen(source, timeout=10)
+            transcription = r.recognize_google(audio_text)
+            return jsonify(success=True, transcription=transcription)
+    except sr.UnknownValueError:
+            return jsonify(success=False, error="Sorry, I couldn't understand the audio.")
+    except Exception as e:
+            return jsonify(success=False, error=str(e))
 
 if __name__ == "__main__":
     app.run(debug=True)
 
-
-'''
-root = tk.Tk()
-root.title('Speech Recorder')
-button = tk.Button(root, text='Record', width=25, command=partial(record_audio,15))
-button.pack(pady=10)
-root.mainloop()
-'''
