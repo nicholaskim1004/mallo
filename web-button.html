@@ -2,35 +2,38 @@
 <html>
     <head>
         <title>Speech Recognizer</title>
-        <script>
-            async function record_audio(){
-                try{
-                    const response = await fetch('/record', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ time: 10 }) // Pass recording time if needed
-                    });
-                    const result = await response.json();
-            
-                    // Display the result
-                    if (result.success) {
-                        alert("Transcription: " + result.transcription);
-                    } else {
-                        alert("Error: " + result.error);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('An error occurred while trying to record audio.');
-                }
-            }
-        </script>
     </head>
 
         <body>
             <h1>Speech Recognizer</h1>
-            <button onclick="record_audio()">Record</button>
+            <button style= "background-color: red;" onclick="record_audio()">Record</button>
+            <div id="output"></div> 
+            <script>
+                async function record_audio(){
+                    try {
+                        // Send a POST request to the Flask `/record` endpoint
+                        const response = await fetch('/record', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        });
+                        const result = await response.json();
+                
+                        // Display the result in the 'output' div
+                        const outputDiv = document.getElementById('output');
+                        if (result.success) {
+                            outputDiv.innerHTML = `<p>Transcription: ${result.transcription}</p>`;
+                        } else {
+                            outputDiv.innerHTML = `<p>Error: ${result.error}</p>`;
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        const outputDiv = document.getElementById('output');
+                        outputDiv.innerHTML = `<p>Error: Unable to record audio.</p>`;
+                    }
+                }
+            </script>
         
         </body>
 </html>
