@@ -1,9 +1,35 @@
 <!DOCTYPE html>
-<head>
+<html>
     <head>
         <title>Speech Recognizer</title>
-        </head>
+        <script>
+            async function record_audio(){
+                try{
+                    const response = await fetch('/record', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ time: 10 }) // Pass recording time if needed
+                    });
+                    const result = await response.json();
+            
+                    // Display the result
+                    if (result.success) {
+                        alert("Transcription: " + result.transcription);
+                    } else {
+                        alert("Error: " + result.error);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while trying to record audio.');
+                }
+            }
+        </script>
+    </head>
+
         <body>
+            <h1>Speech Recognizer</h1>
             <button onclick="record_audio()">Record</button>
         
         </body>
