@@ -28,6 +28,7 @@ if __name__ == "__main__":
         if user_input.lower() in ["quit","exit","bye"]:
             break
         
+        print("Enter level of fluency and what type of conversation you'd like to have")
         response = chat_w_gpt(user_input)
         print(f"GPT: {response}")
         
