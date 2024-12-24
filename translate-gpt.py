@@ -10,16 +10,24 @@ client = OpenAI(
   api_key=key
 )
 
-while True:
-    content = input("What level of fluency are you, and what do you want to talk about?: ")
-    
-    completion = client.chat.completions.create(
-    model="gpt-4o-mini",
-    store=True,
-    messages=[
-        {"role": "system", "content": "You are a Korean teacher that'll have a conversation on given topic at a given speaking level. Please go one sentence at a time."},
-        {"role": "user", "content": content}
-    ]
+def chat_w_gpt(prompt):
+    response = client.chat.completions.create(
+        model = "gpt-4o-mini",
+        store = True,
+        messages = [{"role": "system", "content": "You are a Korean teacher that'll have a conversation on given topic at a given speaking level. Please go one sentence at a time."} ,
+                    {"role": "user", "content": prompt}]
     )
+    
+    return response.choices[0].message.content.strip()
 
-    print(completion.choices[0].message)
+
+
+if __name__ == "__main__":
+    while True:
+        user_input = input("User: ")
+        if user_input.lower() in ["quit","exit","bye"]:
+            break
+        
+        response = chat_w_gpt(user_input)
+        print(f"GPT: {response}")
+        
