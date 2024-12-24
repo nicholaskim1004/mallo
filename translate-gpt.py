@@ -1,13 +1,15 @@
-import openai 
+from openai import OpenAI
 
 with open("key.txt","r") as file:
     key = file.read().strip()
 
-openai.api_key = key
+client = OpenAI(
+    api_key=key
+)
 
 def chat_w_gpt(prompt):
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model = "gpt-4",
             store = True,
             messages = [{"role": "system", "content": "You are a Korean teacher that'll have a conversation on given topic at a given speaking level. Please go one sentence at a time."} ,
