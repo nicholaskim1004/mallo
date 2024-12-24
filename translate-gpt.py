@@ -20,11 +20,14 @@ def chat_w_gpt(prompt):
     except Exception as e:
         return(f"There was an error: {e}")
 
-
+first_run = True
 
 if __name__ == "__main__":
     while True:
-        print("Enter level of fluency and what type of conversation you'd like to have")
+        if first_run:
+             print("Enter level of fluency and what type of conversation you'd like to have")
+             first_run = False
+             
         user_input = input("User: ")
         if user_input.lower() in ["quit","exit","bye"]:
             break
