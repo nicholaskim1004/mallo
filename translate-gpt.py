@@ -2,6 +2,7 @@ from openai import OpenAI
 import pyaudio
 import whisper
 import numpy as np
+import speech_recognition as sr
 
 with open("key.txt","r") as file:
     key = file.read().strip()
@@ -22,39 +23,34 @@ def chat_w_gpt(prompt):
         return(response.choices[0].message.content.strip())
     except Exception as e:
         return(f"There was an error: {e}")
+    
+def transc_mic():
+    r = sr.Recognizer()
+    mic = sr.Microphone()
+    try: 
+        with mic as source:
+            r.adjust_for_ambient_noise(source)
+            audio = r.listen(source)
+            
+            transcr = r.recognize_google(audio,language="ko-KR")
+            print(f"{transcr}")
+            return transcr
+    except sr.UnknownValueError:
+        print("Sorry I didn't understand the audio")
+    except sr.RequestError as e:
+        print(f"Error {e}")
 
 first_run = True
-
-#loading whisper model
-whisper_mod = whisper.load_model("base")
-
-#initalizing parameters: 
-#RATE (num of samples collected per sec), CHUNK (num of frames in buffer)
-RATE = 16000
-CHUNK = 1024
-
-p = pyaudio.PyAudio
-
-stream = p.open(format=pyaudio.paInt16, channels=1, rate=RATE, input=True, frames_per_buffer=CHUNK)
 
 if __name__ == "__main__":
     while True:
         if first_run:
              print("Enter level of fluency and what type of conversation you'd like to have")
              first_run = False
-        
-        audio_data = stream.read(CHUNK, exception_on_overflow=False)
-        
-        #normalizing the audio file by 32768 as 16 bit can range from -32,767 to 32,767
-        audio_np = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32) / 32768.0
-        
-        res = whisper_mod.transcribe(audio_np, language="ko")
-     
-        user_input = input(f"User: {res['text']}")
+        user_trans = transc_mic()
+        if user_trans:
+            user_input = input(f"User: {user_trans}")
         if user_input.lower() in ["quit","exit","bye"]:
-            stream.stop_stream()
-            stream.close()
-            p.terminate()
             break
         
         response = chat_w_gpt(user_input)
