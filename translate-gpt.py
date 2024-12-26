@@ -1,6 +1,5 @@
 from openai import OpenAI
 import pyaudio
-import whisper
 import numpy as np
 import speech_recognition as sr
 
@@ -23,7 +22,7 @@ def chat_w_gpt(prompt):
         return(response.choices[0].message.content.strip())
     except Exception as e:
         return(f"There was an error: {e}")
-    
+
 def transc_mic():
     r = sr.Recognizer()
     mic = sr.Microphone()
@@ -46,12 +45,16 @@ if __name__ == "__main__":
     while True:
         if first_run:
              print("Enter level of fluency and what type of conversation you'd like to have")
+             user_input = input("User: ")
+             response = chat_w_gpt(user_input)
+             print(f"GPT: {response}")
              first_run = False
-        user_trans = transc_mic()
-        if user_trans:
-            user_input = input(f"User: {user_trans}")
-        if user_input.lower() in ["quit","exit","bye"]:
-            break
+             
+        user_input = transc_mic()
+        
+        #if user_input.lower() in ["quit","exit","bye"]:
+            #break
+        
         
         response = chat_w_gpt(user_input)
         print(f"GPT: {response}")
