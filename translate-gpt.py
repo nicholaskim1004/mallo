@@ -1,4 +1,5 @@
 from openai import OpenAI
+from pathlib import Path
 import pyaudio
 import numpy as np
 import speech_recognition as sr
@@ -18,8 +19,13 @@ def chat_w_gpt(prompt):
             messages = [{"role": "system", "content": "You are a Korean teacher that'll have a conversation on given topic at a given speaking level. Please go one sentence at a time."} ,
                         {"role": "user", "content": prompt}]
         )
-    
-        return(response.choices[0].message.content.strip())
+        speech_file_path = Path(__file__).parent / "speech.mp3"
+        speech = client.audio.speech.create(
+                model="tts-1",
+                voice="alloy",
+                input=f"{response.choices[0].message.content.strip()}",
+        )
+        return(response.choices[0].message.content.strip(),speech.stream_to_file(speech_file_path))
     except Exception as e:
         return(f"There was an error: {e}")
 
